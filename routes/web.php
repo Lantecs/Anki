@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\AuthManager;
+use App\Http\Controllers\DeckController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,6 +19,15 @@ use Illuminate\Support\Facades\Route;
 /* Route::get('/', function () {
     return view('auth/login');
 }); */
+
+Route::controller(DeckController::class)->group(function () {
+    Route::get('/get-user-decks', 'getUserDecks')->name('get.user.decks');
+    Route::get('/get-user-questions/{id}', 'getUserQuestions')->name('get.user.questions');
+    Route::post('/add-deck', 'addDeck')->name('add.deck');
+    Route::post('/save-question/{id}', 'saveQuestion')->name('save.question');
+    Route::delete('/deckdelete/{id}', 'deckDelete')->name('deck.delete');
+    Route::get('/edit-deck/{id}', 'deckEdit')->name('deck.edit');
+});
 
 Route::get('/login', [AuthManager::class, "login"])->name('login');
 Route::post('/login', [AuthManager::class, "loginPost"])->name('login.post');

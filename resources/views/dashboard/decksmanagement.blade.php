@@ -40,6 +40,7 @@
                 </div> --}}
 
                 @include('layouts/add_deck_modal')
+                @include('layouts/edit_deck')
 
                 <div class="container">
                     <div class="d-flex align-items-start top-con-label py-3">
@@ -56,7 +57,9 @@
                     </div>
                     <div class="scrollable-container">
                         <div class="add-content">
-                            <div class="row cen pt-3 pb-3 text-t">
+
+                            {{--                             <div class="row cen pt-3 pb-3 text-t">
+
                                 <div class="col">
                                     <div class="ps-5 fw-bold">Science</div>
                                 </div>
@@ -79,7 +82,8 @@
                                             padding: 7.5px;
                                             height: fit-content;
                                             color: #ffffff;
-                                            border-radius: 12px;">
+                                            border-radius: 12px;"
+                                            data-bs-toggle="modal" data-bs-target="#edit_deck_modal">
                                             <i class="bi bi-pencil-square but"></i>
                                         </button>
                                     </div>
@@ -99,11 +103,11 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                         </div>
 
-                        <div class="add-but text-center">
+                        <div class="add-but-main text-center">
                             <div class="row">
                                 <button class="btn"
                                     style="outline: none;
@@ -126,6 +130,114 @@
         </div>
     </div>
 @endsection
+
+<script>
+    loadDeck();
+
+    function loadDeck() {
+        fetch('/get-user-decks', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.querySelector('.add-content').innerHTML = '';
+
+                data.userDecks.forEach(deck => {
+                    const row = document.createElement('div');
+
+                    // Parse and format the date
+                    const createdDate = new Date(deck.created_at);
+                    const formattedDate = createdDate.toLocaleDateString('en-US');
+
+                    row.innerHTML = `
+                <div class="row cen pt-3 pb-3 text-t">
+                    <div class="col">
+                        <div class="ps-5 fw-bold">${deck.name}</div>
+                    </div>
+                    <div class="col">${deck.description}</div>
+                    <div class="col">${formattedDate}</div>
+                    <div class="col col-lg-2 d-flex">
+                        <div>
+                            <button class="btn"
+        style="outline: none;
+            border-radius: 2px;
+            background: #1CCA00;
+            margin: 14px 0 16px 0;
+            width: 40px;
+            font-size: 20px;
+            padding: 7.5px;
+            height: fit-content;
+            color: #ffffff;
+            border-radius: 12px;"
+        data-bs-toggle="modal"
+        data-bs-target="#edit_deck_modal"
+        onclick="editDeckAndLoadQuestion(${deck.user_deck_id})">
+    <i class="bi bi-pencil-square but"></i>
+</button>
+
+
+                        </div>
+                        <div class="ps-2">
+                            <button name="delete" class="btn"
+                            style="outline: none;
+                                border-radius: 2px;
+                                background: red;
+                                margin: 14px 0 16px 0;
+                                width: 40px;
+                                font-size: 20px;
+                                padding: 7.5px;
+                                height: fit-content;
+                                color: #ffffff;
+                                border-radius: 12px;"
+                                data-deck-id="${deck.user_deck_id}"
+                                onclick="deckDelete(${deck.user_deck_id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+
+                        </div>
+                    </div>
+                </div>
+            `;
+
+                    document.querySelector('.add-content').appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
+    function deckDelete(deckId) {
+        fetch(`/deckdelete/${deckId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data.message);
+                loadDeck(); // Assuming loadDeck() is a function to reload the deck list after deletion
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+</script>
 
 <style>
     .cen {
