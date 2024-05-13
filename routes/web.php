@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\DeckController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,8 +27,19 @@ Route::controller(DeckController::class)->group(function () {
     Route::post('/add-deck', 'addDeck')->name('add.deck');
     Route::post('/save-question/{id}', 'saveQuestion')->name('save.question');
     Route::delete('/deckdelete/{id}', 'deckDelete')->name('deck.delete');
+    Route::delete('/questiondelete/{id}', 'questionDelete')->name('question.delete');
     Route::get('/edit-deck/{id}', 'deckEdit')->name('deck.edit');
 });
+
+Route::controller(HomeController::class)->group(function () {
+    Route::get('/get-user-decks-home', 'getUserDecksHome')->name('get.user.decks.home');
+});
+
+Route::get('/get-deck-questions/{deckId}', [HomeController::class, 'getDeckQuestions'])->name('get.deck.questions');
+
+
+
+
 
 Route::get('/login', [AuthManager::class, "login"])->name('login');
 Route::post('/login', [AuthManager::class, "loginPost"])->name('login.post');

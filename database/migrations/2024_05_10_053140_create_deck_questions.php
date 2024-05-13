@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('deck_questions', function (Blueprint $table) {
             $table->id('question_id');
             $table->unsignedBigInteger('user_deck_id');
-            $table->foreign('user_deck_id')->references('user_deck_id')->on('user_deck');
+            $table->foreign('user_deck_id')->references('user_deck_id')->on('user_deck')->onDelete('cascade');
             $table->string('front');
             $table->string('back');
             $table->timestamps();

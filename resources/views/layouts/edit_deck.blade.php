@@ -88,7 +88,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="savedeck()">Save</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
             </div>
         </div>
     </div>
@@ -130,10 +130,17 @@
                         <p>${question.back}</p>
                     </div>
                     <div class="col d-flex">
-
                         <div class="ps-5">
+                                                <button class="btn"
+                                                    style="outline: none; border-radius: 2px; background: #1CCA00; margin: 14px 0 16px 0; width: 40px; font-size: 20px; padding: 7.5px; height: fit-content; color: #ffffff; border-radius: 12px;"
+                                                    data-bs-toggle="modal" data-bs-target="#edit_deck_modal">
+                                                    <i class="bi bi-pencil-square but"></i>
+                                                </button>
+                                            </div>
+                        <div class="ps-2">
                             <button class="btn"
-                                style="outline: none; border-radius: 2px; background: red; margin: 14px 0 16px 0; width: 40px; font-size: 20px; padding: 7.5px; height: fit-content; color: #ffffff; border-radius: 12px;">
+                                style="outline: none; border-radius: 2px; background: red; margin: 14px 0 16px 0; width: 40px; font-size: 20px; padding: 7.5px; height: fit-content; color: #ffffff; border-radius: 12px;"
+                                onclick="questionDelete(${deckId}, ${question.id})"> <!-- Pass question.id -->
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -213,24 +220,24 @@
     function addQuestion(deckId) {
         const addQuestionCon = document.querySelector('.add_question_con');
         const newQuestion = `
-                        <div class="row con-ques pt-3 pb-3 text-t" id="con-quest">
-                            <div class="col">
-                                <textarea name="front" class="text_area" id="front"></textarea>
-                            </div>
-                            <div class="col">
-                                <textarea name="back" class="text_area" id="back"></textarea>
-                            </div>
-                            <div class="col d-flex justify-content-center">
-                                <div class="ps-1 pt-2">
-                                    <button class="btn"
-                                        onclick="saveQuestion(${deckId})"  // Pass deckId as a parameter
-                                        style="outline: none; border-radius: 2px; background: #1CCA00; margin: 14px 0 16px 0; width: 40px; font-size: 20px; padding: 7.5px; height: fit-content; color: #ffffff; border-radius: 12px;">
-                                        <i class="bi bi-check2" style="font-size: 25px;"></i>
-                                    </button>
-                                </div>
-                            </div>
+                <div class="row con-ques pt-3 pb-3 text-t" id="con-quest">
+                    <div class="col">
+                        <textarea name="front" class="text_area" id="front"></textarea>
+                    </div>
+                    <div class="col">
+                        <textarea name="back" class="text_area" id="back"></textarea>
+                    </div>
+                    <div class="col d-flex justify-content-center">
+                        <div class="ps-1 pt-2">
+                            <button class="btn"
+                                onclick="saveQuestion(${deckId})"  // Pass deckId as a parameter
+                                style="outline: none; border-radius: 2px; background: #1CCA00; margin: 14px 0 16px 0; width: 40px; font-size: 20px; padding: 7.5px; height: fit-content; color: #ffffff; border-radius: 12px;">
+                                <i class="bi bi-check2" style="font-size: 25px;"></i>
+                            </button>
                         </div>
-            `;
+                    </div>
+                </div>
+    `;
 
         // Insert the new question HTML before the "Add Question" button
         addQuestionCon.insertAdjacentHTML('beforeend', newQuestion);
@@ -239,6 +246,31 @@
         const addButton = document.querySelector('.add-but');
         addButton.style.display = 'none';
     }
+
+
+    function questionDelete(deckId, questionId) {
+        fetch(`/questiondelete/${questionId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data.message);
+                loadDeck();
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
 
 
     function editDeck(deckId) {

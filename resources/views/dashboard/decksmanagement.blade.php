@@ -132,6 +132,7 @@
 @endsection
 
 <script>
+    
     loadDeck();
 
     function loadDeck() {
@@ -180,8 +181,8 @@
         data-bs-toggle="modal"
         data-bs-target="#edit_deck_modal"
         onclick="editDeckAndLoadQuestion(${deck.user_deck_id})">
-    <i class="bi bi-pencil-square but"></i>
-</button>
+                <i class="bi bi-pencil-square but"></i>
+            </button>
 
 
                         </div>
@@ -237,6 +238,7 @@
                 console.error('There was a problem with the fetch operation:', error);
             });
     }
+
 </script>
 
 <style>

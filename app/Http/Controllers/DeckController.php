@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class DeckController extends Controller
 {
-
+    
     public function getUserDecks()
     {
         $user_id = auth()->user()->id;
@@ -32,7 +32,6 @@ class DeckController extends Controller
                 return response()->json(['error' => 'Deck not found'], 404);
             }
 
-            // Assuming you have a relationship set up in the UserDecks model
             $questions = $deck->questions;
 
             return response()->json(['deckQuestions' => $questions]);
@@ -41,19 +40,21 @@ class DeckController extends Controller
         }
     }
 
-
-
-    public function deckDelete($id)
+    public function questionDelete($id)
     {
         $user_id = auth()->user()->id;
-        $deck = UserDecks::where('user_id', $user_id)->find($id);
-        $deletedRows = UserDecks::where('user_id', $user_id)
-            ->where('user_deck_id', $id)
+        // Assuming $id is the ID of the question to be deleted
+        $deleted = DB::table('deck_questions')
+            ->where('user_id', $user_id)
+            ->where('id', $id)
             ->delete();
 
-        return response()->json(['message' => 'Deck deleted successfully']);
+        if ($deleted) {
+            return response()->json(['message' => 'Question deleted successfully']);
+        } else {
+            return response()->json(['message' => 'Failed to delete question'], 500);
+        }
     }
-
 
     public function deckEdit(string $id)
     {
@@ -67,7 +68,6 @@ class DeckController extends Controller
 
         return response()->json(['deck' => $deck]);
     }
-
 
     public function addDeck(Request $request)
     {
@@ -89,32 +89,35 @@ class DeckController extends Controller
 
     public function saveQuestion(Request $request, $id)
     {
-        // Validate request data
+
         $request->validate([
             'front' => 'required|max:150',
             'back' => 'required|max:150',
         ]);
 
-        // Get the authenticated user's ID
         $user_id = auth()->user()->id;
 
-        // Get the user_deck_id
         $user_deck_id = $id;
 
-        // Prepare data for the new DeckQuestion
         $data['user_deck_id'] = $user_deck_id;
         $data['front'] = $request->input('front');
         $data['back'] = $request->input('back');
 
-        // Create and save the new DeckQuestion
         $question = DeckQuestion::create($data);
 
-        // Return a JSON response indicating success
         return response()->json(['success' => 'Question added successfully']);
     }
 
+    public function deckDelete($id)
+    {
+        $user_id = auth()->user()->id;
 
+        $deletedRows = UserDecks::where('user_id', $user_id)
+            ->where('user_deck_id', $id)
+            ->delete();
 
-
+        // Optionally, you can return a response to indicate success or failure
+        return response()->json(['message' => 'Deck deleted successfully']);
+    }
 
 }

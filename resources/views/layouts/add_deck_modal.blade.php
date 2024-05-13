@@ -33,7 +33,7 @@
 
 
 <script>
-/*     document.addEventListener("DOMContentLoaded", function() {
+    /*     document.addEventListener("DOMContentLoaded", function() {
         const addButton = document.querySelector('.add-but');
 
         addButton.addEventListener('click', function() {
